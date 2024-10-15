@@ -17,13 +17,13 @@ describe('ProductDetail', () => {
       db.product.delete({ where: { id: { equals: productId } } });
     });
     it('should render product detail', async () => {
-        const product = db.product.getAll()[0]
-        render(<ProductDetail productId={product.id} />)
+      const product = db.product.getAll()[0]
+        render(<ProductDetail productId={parseInt(product.id)} />)
         const productName = await screen.findByText(new RegExp(product.name))
         expect(productName).toHaveTextContent(new RegExp(product.name));
         const productprice = await screen.findByText(/\$/i); 
         expect(productprice).toBeInTheDocument();
-    })
+     })
     it('should render "not found"  message if ID is not id DB', async () => {
         const product = db.product.getAll()[0];
         const productId=product.id+1

@@ -3,9 +3,13 @@ import ResizeObserver from "resize-observer-polyfill";
 import {server} from "./mocks/server"
 
 import { afterAll, beforeAll } from "vitest";
+import { cleanup } from "@testing-library/react";
 
 beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers()
+  cleanup()
+});
 afterAll(()=>server.close())
 
 global.ResizeObserver = ResizeObserver;
