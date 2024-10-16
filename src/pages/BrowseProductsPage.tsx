@@ -47,7 +47,7 @@ function BrowseProducts() {
     fetchProducts();
   }, []);
 
-  if (errorProducts) return <div>Error: {errorProducts}</div>;
+  if (errorProducts) return <div role="errorMessage" >Error: {errorProducts}</div>;
 
   const renderCategories = () => {
     if (isCategoriesLoading) return (
@@ -55,7 +55,8 @@ function BrowseProducts() {
         <Skeleton />
       </div>
     );
-    if (errorCategories) return <div>Error: {errorCategories}</div>;
+
+    if (errorCategories) return null
     return (
       <Select.Root
         onValueChange={(categoryId) =>
@@ -81,7 +82,7 @@ function BrowseProducts() {
   const renderProducts = () => {
     const skeletons = [1, 2, 3, 4, 5];
 
-    if (errorProducts) return <div>Error: {errorProducts}</div>;
+    // if (errorProducts) return <div >Error: {errorProducts}</div>;
 
     const visibleProducts = selectedCategoryId
       ? products.filter((p) => p.categoryId === selectedCategoryId)
@@ -130,7 +131,7 @@ function BrowseProducts() {
   };
 
   return (
-    <div role="fff">
+    <div>
       <h1>Products</h1>
       <div className="max-w-xs">{renderCategories()}</div>
       {renderProducts()}
