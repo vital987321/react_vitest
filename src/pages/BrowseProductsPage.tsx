@@ -88,6 +88,7 @@ function BrowseProducts() {
       ? products.filter((p) => p.categoryId === selectedCategoryId)
       : products;
 
+
     return (
       <Table.Root>
         <Table.Header>

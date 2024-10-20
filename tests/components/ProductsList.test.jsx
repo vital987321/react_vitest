@@ -8,13 +8,16 @@ import { db } from "../mocks/db";
 
 describe('ProductList with Moked db', () => {
     const productsIds=[]
+    var category
     beforeAll(() => {
+        category=db.category.create();
         [1, 2, 3].forEach(() => {
-            const product = db.product.create()
+            const product = db.product.create({ category: category, categoryId:category.id});
             productsIds.push(product.id)
         })
     })
     afterAll(() => {
+        db.category.delete(category)
         db.product.deleteMany({where:{id:{in: productsIds}}})
     })
 
