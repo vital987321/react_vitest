@@ -9,13 +9,13 @@ export const getServerEndpoint=(endpoint)=>{
 
 
 export const generateProductName=()=>{
-    const generateName=()=>faker.commerce.productName
+    const generateName=faker.commerce.productName
     if (db==undefined) return generateName()
     if (db.product==undefined) return generateName()
     const allproducts=db.product.getAll()
     if (allproducts.length==0) return generateName()
     const productsNames=allproducts.map(product=>product.name)
-    const cycleCounter=0
+    var cycleCounter=0
     while (true){
         cycleCounter+=1
       const name =generateName()
@@ -26,20 +26,41 @@ export const generateProductName=()=>{
     }
   }
 
-  export const generateCategoryName=()=>{
-    const generateName=()=>faker.commerce.department
-    if (db==undefined) return generateName()
-    if (db.category==undefined) return generateName()
+export const generateCategoryName=()=>{
+    const generateName=faker.commerce.department
+    if (db==undefined) {
+        const name=generateName()
+        // console.log('db is undefind. Output name: '+name)
+        return name
+    }
+    if (db.category==undefined) {
+        const name=generateName()
+        // console.log('db.category is undefind. Output name: '+name)
+        return name 
+    }
     const allcategories=db.category.getAll()
-    if (allcategories.length==0) return generateName()
+    // console.log(`Found ${allcategories.length} categories.`)
+    if (allcategories.length==0) {
+        const name=generateName()
+        // console.log('allcategories.length==0. Output name: '+name)
+        return name
+    }
     const categoryNames=allcategories.map(category=>category.name)
-    const cycleCounter=0
+    // console.log('existing categories Names:')
+    // console.log(categoryNames)
+    var cycleCounter=0
     while (true){
-        cycleCounter+=1
+      cycleCounter+=1
       const name =generateName()
       if (!categoryNames.includes(name)){
+        // console.log(`Current name ${name} is not in a list. Returning ${name}`)
         return name
       }
-      if (cycleCounter>100) return (name+" v2")
+      if (cycleCounter>100) {
+        name=name+" v2"
+        // console.log(`cycleCounter>100. Returning ${name}`)
+        return name
+      }
     }
+    // console.log('I am outside while cycle. I shall not be here.')
   }

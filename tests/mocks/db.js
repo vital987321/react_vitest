@@ -18,14 +18,14 @@ import { generateProductName, generateCategoryName } from "../utils";
 export const db = factory({
   product: {
     id: primaryKey(faker.number.int),
-    name:generateProductName(),
+    name:generateProductName,
     price: () => faker.number.int({ min: 1, max: 100 }),
     categoryId:faker.number.int,
     category: oneOf('category')
   },
   category: {
     id: primaryKey(faker.number.int),
-    name: generateCategoryName(),
+    name: generateCategoryName,
     products: manyOf('product')
   },
 });

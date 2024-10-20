@@ -14,24 +14,18 @@ import { db } from "../mocks/db";
 import { CartProvider } from "../../src/providers/CartProvider";
 import { getServerEndpoint } from "../utils";
 
-
 describe("BrowseProductsPage", () => {
-  const products = [];
-  const categories = [];
+  var products = [];
+  var categories = [];
   beforeAll(() => {
-    // [1, 2, 3].forEach(() => {
-    //   const product = db.product.create();
-    //   products.push(product);
-    // });
-    // [1, 2, 3].forEach(() => {
-    //   const category = db.category.create();
-    //   categories.push(category);
-    // });
     [1, 2, 3].forEach(() => {
       const category = db.category.create();
       categories.push(category);
-      [1,2,3].forEach(() => {
-        const product = db.product.create({ category: category, categoryId:category.id});
+      [1, 2, 3].forEach(() => {
+        const product = db.product.create({
+          category: category,
+          categoryId: category.id,
+        });
         products.push(product);
       });
     });
@@ -42,6 +36,8 @@ describe("BrowseProductsPage", () => {
     db.product.deleteMany({ where: { id: { in: productsIds } } });
     const categoriesIds = categories.map((category) => category.id);
     db.category.deleteMany({ where: { id: { in: categoriesIds } } });
+    products = [];
+    categories = [];
   });
 
   const renderComponent = () => {
@@ -87,13 +83,15 @@ describe("BrowseProductsPage", () => {
     waitForElementToBeRemoved(getProductsSeleton());
   });
   it("should not render categories when category fetching fails", async () => {
-    server.use(http.get("/categories", async  () =>{
-      // await delay()
-      HttpResponse.error()
-    } ));
+    server.use(
+      http.get("/categories", async () => {
+        // await delay()
+        HttpResponse.error();
+      })
+    );
     const { getCategoriesSkeleton } = renderComponent();
-    const categoriesSkeleton=getCategoriesSkeleton()
-    expect(categoriesSkeleton).toBeInTheDocument()
+    const categoriesSkeleton = getCategoriesSkeleton();
+    expect(categoriesSkeleton).toBeInTheDocument();
     await waitForElementToBeRemoved(categoriesSkeleton);
     expect(categoriesSkeleton).not.toBeInTheDocument();
     expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
@@ -119,8 +117,8 @@ describe("BrowseProductsPage", () => {
     });
   });
   it("should render products", async () => {
-    const { getProductsSkeleton: getProductsSeleton } = renderComponent();
-    await waitForElementToBeRemoved(getProductsSeleton);
+    const { getProductsSkeleton } = renderComponent();
+    await waitForElementToBeRemoved(getProductsSkeleton);
     products.forEach(async (product) => {
       const productName = screen.getByText(product.name);
       expect(productName).toBeInTheDocument();
@@ -137,17 +135,33 @@ describe("BrowseProductsPage", () => {
       });
       expect(categoryOption).toBeInTheDocument();
       await user.click(categoryOption);
-      // const tableRows=screen.getAllByRole('row')
-      // const dataRows=tableRows.slice(1)
-      
-      const productsWithinCategory = products.map(
+      const productsWithinCategory = products.filter(
         (product) => product.category == category
       );
-      // expect(dataRows).toHaveLength(productsWithCategory.length)
-      productsWithinCategory.forEach((product) => {
-        productOnPage = screen.getByText(product.name);
+      productsWithinCategory.forEach(async (product) => {
+        const productOnPage = await screen.findByText(product.name);
         expect(productOnPage).toBeInTheDocument();
       });
+    });
+  });
+  it("should render all products if category All is selected", async () => {
+    const { getCategoriesSkeleton } = renderComponent();
+    await waitForElementToBeRemoved(getCategoriesSkeleton);
+
+    const combobox = screen.queryByRole("combobox");
+    expect(combobox).toBeInTheDocument();
+    const user = userEvent.setup();
+    await user.click(combobox);
+
+    const categoryOption = screen.getByRole("option", {
+      name: /all/i,
+    });
+    expect(categoryOption).toBeInTheDocument();
+    await user.click(categoryOption);
+
+    products.forEach(async (product) => {
+      const productName = screen.getByText(product.name);
+      expect(productName).toBeInTheDocument();
     });
   });
 });
