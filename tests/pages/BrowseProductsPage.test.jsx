@@ -7,12 +7,11 @@ import {
 import { afterAll, beforeAll, expect } from "vitest";
 import { server } from "../mocks/server";
 import { delay, http, HttpResponse } from "msw";
-import { Theme } from "@radix-ui/themes";
 import BrowseProducts from "../../src/pages/BrowseProductsPage";
 import userEvent from "@testing-library/user-event";
 import { db } from "../mocks/db";
-import { CartProvider } from "../../src/providers/CartProvider";
 import { getServerEndpoint } from "../utils";
+import AllProviders from "../AllProviders"
 
 describe("BrowseProductsPage", () => {
   var products = [];
@@ -41,13 +40,8 @@ describe("BrowseProductsPage", () => {
   });
 
   const renderComponent = () => {
-    render(
-      <CartProvider>
-        <Theme>
-          <BrowseProducts />
-        </Theme>
-      </CartProvider>
-    );
+
+    render(<BrowseProducts/>, {wrapper: AllProviders})
     return {
       getProductsSkeleton: () =>
         screen.getByRole("progressbar", { name: "products" }),
